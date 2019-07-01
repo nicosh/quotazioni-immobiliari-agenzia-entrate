@@ -2,3 +2,4 @@ rawData/*.csv
 tmp*
 data/zone.csv
 data/valori.csv
+node_modules
