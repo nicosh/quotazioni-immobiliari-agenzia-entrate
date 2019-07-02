@@ -56,8 +56,8 @@ const getAggregatedData = (istat,time)=>{
         Comune_ISTAT: curr.Comune_ISTAT,
         Compr_max: Number(acc.Compr_max) + Number(curr.Compr_max),
         Compr_min: Number(acc.Compr_min) + Number(curr.Compr_min),
-        Loc_min: parseFloat(acc.Loc_min) + parseFloat(curr.Loc_min.replace(",",".")),
-        Loc_max: parseFloat(acc.Loc_max) + parseFloat(curr.Loc_max.replace(",",".")),
+        Loc_min: acc.Loc_min + curr.Loc_min,
+        Loc_max: acc.Loc_max + curr.Loc_max,
     }))
     reduced.Compr_max = reduced.Compr_max / locationList.length
     reduced.Compr_min = reduced.Compr_min / locationList.length
