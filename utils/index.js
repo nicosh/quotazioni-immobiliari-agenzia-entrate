@@ -19,34 +19,30 @@ const  recFindByExt = (base,ext,files,result)=> {
 
 const findLocations = (NameOrCode,time) =>{
     const csvs = recFindByExt('./jsonData/data/zone','json')
-    let data = []
+    let data;
     csvs.forEach(json=>{
         let exploded = json.split("_");
         if(exploded[3] == time){
             let obj = require(`../${json}`)
-            obj.forEach(entry=>{
-                let result = entry["Comune_descrizione"] == NameOrCode || entry["Comune_ISTAT"] == NameOrCode   ? entry :  false
-                if(result){
-                    data.push(result) 
-                }
+            data = obj.filter(entry=>{
+                return  entry["Comune_descrizione"] == NameOrCode || entry["Comune_ISTAT"] == NameOrCode ? entry :  false
             })
         }
     })
     return data;
 }
 
-const getLocationData = (LinkZona,time)=>{
+const getLocationData = (LinkZona,time,tipologia=null)=>{
     const csvs = recFindByExt('./jsonData/data/valori','json')
-    let data = []
+    let data;
     csvs.forEach(json=>{
         let exploded = json.split("_");
         if(exploded[3] == time){
             let obj = require(`../${json}`)
-            obj.forEach(entry=>{
-                let result =  entry["LinkZona"] == LinkZona || entry["Comune_ISTAT"] == LinkZona ? entry :  false
-                if(result){
-                    data.push(result) 
-                }
+            data = obj.filter(entry=>{
+                let type = tipologia ? entry["Descr_Tipologia"] == tipologia : true
+                let loc =   entry["LinkZona"] == LinkZona || entry["Comune_ISTAT"] == LinkZona ? entry :  false
+                return loc && type
             })
         }
     })
@@ -55,17 +51,14 @@ const getLocationData = (LinkZona,time)=>{
 
 const getAggregatedData = (istat,time)=>{
     let locationList = getLocationData(istat,time)
-    let reduced = locationList.reduce((acc,curr)=>{
-        return {
-            comune : curr.Comune_descrizione,
-            Comune_ISTAT: curr.Comune_ISTAT,
-            Compr_max: Number(acc.Compr_max) + Number(curr.Compr_max),
-            Compr_min: Number(acc.Compr_min) + Number(curr.Compr_min),
-            Loc_min: parseFloat(acc.Loc_min) + parseFloat(curr.Loc_min.replace(",",".")),
-            Loc_max: parseFloat(acc.Loc_max) + parseFloat(curr.Loc_max.replace(",",".")),
-
-        }
-    })
+    let reduced = locationList.reduce((acc,curr)=>({
+        comune : curr.Comune_descrizione,
+        Comune_ISTAT: curr.Comune_ISTAT,
+        Compr_max: Number(acc.Compr_max) + Number(curr.Compr_max),
+        Compr_min: Number(acc.Compr_min) + Number(curr.Compr_min),
+        Loc_min: parseFloat(acc.Loc_min) + parseFloat(curr.Loc_min.replace(",",".")),
+        Loc_max: parseFloat(acc.Loc_max) + parseFloat(curr.Loc_max.replace(",",".")),
+    }))
     reduced.Compr_max = reduced.Compr_max / locationList.length
     reduced.Compr_min = reduced.Compr_min / locationList.length
     reduced.Loc_min = reduced.Loc_min / locationList.length
