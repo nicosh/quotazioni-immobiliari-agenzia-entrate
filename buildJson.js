@@ -28,8 +28,8 @@ valori.forEach(file=>{
             ...curr,
             Compr_max  : Number(curr.Compr_max) || "",
             Compr_min  : Number(curr.Compr_min) || "",
-            Loc_min: parseFloat(curr.Loc_min) + parseFloat(curr.Loc_min.replace(",",".")),
-            Loc_max: parseFloat(curr.Loc_max) + parseFloat(curr.Loc_max.replace(",",".")),
+            Loc_min: parseFloat(curr.Loc_min.replace(",",".")),
+            Loc_max: parseFloat(curr.Loc_max.replace(",",".")),
 
         }))
         let json = JSON.stringify(newjson);
